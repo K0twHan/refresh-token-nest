@@ -22,6 +22,7 @@ model User {
   money     Decimal  @default(0)
   currency  String   @default("USD")
   birthDay     DateTime
+  refreshToken String?
   games  Game[]
   purchases Purchase[]
 }
