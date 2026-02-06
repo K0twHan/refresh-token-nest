@@ -14,17 +14,16 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email     String   @unique
-  password String
-  name      String?
-  lastName String?
-  money     Decimal  @default(0)
-  currency  String   @default("USD")
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  password     String
+  name         String?
+  lastName     String?
+  money        Decimal    @default(0)
+  currency     String     @default("USD")
   birthDay     DateTime
   refreshToken String?
-  games  Game[]
-  purchases Purchase[]
+  purchases    Purchase[]
 }
 
 model Game {
@@ -37,8 +36,6 @@ model Game {
   gameUrl       String
   isGiftable Boolean   @default(false)
   purchases Purchase[]
-  userId    Int
-  user      User[]     //@relation(fields: [userId], references: [id])
   gameCodes GameCode[]
 }
 
@@ -47,8 +44,8 @@ model Purchase {
   userId    Int
   gameId    Int
   purchaseDate DateTime @default(now())
-  user      User[]     //@relation(fields: [userId], references: [id])
-  game      Game[]     //@relation(fields: [gameId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  game      Game     @relation(fields: [gameId], references: [id])
 }
 
 

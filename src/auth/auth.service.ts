@@ -1,4 +1,3 @@
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/db/db.service';
@@ -24,8 +23,13 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const refreshToken = await this.hashData(process.env.JWT_REFRESH_SECRET || '');
-    await this.authRepository.saveRefreshToken(email, refreshToken);
+    const refreshToken = await this.jwtService.signAsync(
+      { sub: user.id, email: user.email },
+      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' }
+    );
+    const hashedRefreshToken = await this.hashData(refreshToken);
+
+    await this.authRepository.saveRefreshToken(email, hashedRefreshToken);
 
     const payload = { sub: user.id, email: user.email };
     return {

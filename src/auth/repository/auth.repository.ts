@@ -1,6 +1,7 @@
 import { IAuthRepository } from "../interface/repository/Iauth.reposiyory";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/db/db.service";
+import { UserDTO } from "../dto/userDTO";
 
 @Injectable()
 export class AuthRepository  implements IAuthRepository {
@@ -33,7 +34,7 @@ export class AuthRepository  implements IAuthRepository {
     }
 
 
-    async findUserByEmail(email: string): Promise<any> {
+    async findUserByEmail(email: string): Promise<UserDTO | null> {
         return await this.prismaService.user.findUnique({ where: { email: email } });
     }
 }

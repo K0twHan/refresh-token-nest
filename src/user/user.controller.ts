@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards,Headers } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './dto/createUserDTO';
 import { DepositDTO } from './dto/depositDTO';
@@ -15,9 +15,10 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Post('deposit')
     async depositFunds(
-        @Body() body: DepositDTO,
+        @Body() body: DepositDTO,@Headers() headers
     ) {
-        await this.userService.depositFunds(body.userId, body.amount);
+        const token = headers['authorization']?.split(' ')[1];
+        await this.userService.depositFunds(token, body.amount);
     }
 
 
