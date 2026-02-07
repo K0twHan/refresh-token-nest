@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Type } from "class-transformer"
 import { IsEmail, IsEmpty, isEmpty, isEnum, Length, IsEnum, IsDate, IsNotEmpty } from "class-validator"
 import { Decimal } from "generated/prisma/internal/prismaNamespace"
 
@@ -24,6 +25,7 @@ export class CreateUserDTO {
   currency  : string
     @IsNotEmpty()
     @ApiProperty({ type: Date, description: 'User birth date' })
+    @Type(() => Date)
     @IsDate()
   birthDay     : Date
 }
