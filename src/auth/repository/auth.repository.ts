@@ -1,4 +1,4 @@
-import { IAuthRepository } from "../interface/repository/Iauth.reposiyory";
+import { IAuthRepository } from "../interface/repository/Iauth.repository";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/db/db.service";
 import { UserDTO } from "../dto/userDTO";
@@ -8,13 +8,9 @@ export class AuthRepository  implements IAuthRepository {
     constructor(private readonly prismaService: PrismaService) {}
 
      async saveRefreshToken(email: string, refreshToken: string): Promise<void> {
-        await this.prismaService.user.findUnique({ where: { email: email } }).then(async (user) => {
-            if (user) {
-                await this.prismaService.user.update({
-                    where: { email: email },
-                    data: { refreshToken: refreshToken }
-                });
-            }
+        await this.prismaService.user.update({
+            where: { email: email },
+            data: { refreshToken: refreshToken }
         });
         
     }

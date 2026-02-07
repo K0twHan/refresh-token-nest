@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDTO } from './dto/loginUserDTO';
+import { globalReturn } from 'src/global/return-type/global.return';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
     @Get('hi')
     hi() {
-        return 'Hello from AuthController!';
+        return globalReturn.success('hi',"Selamlar");
     }
     @Post('signin')
     async signIn(@Body() dto : SignInDTO,@Res({ passthrough: true }) res) {
@@ -20,6 +21,6 @@ export class AuthController {
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
-        return { access_token: result.access_token };
+            return globalReturn.success('Sign in successful', result.access_token);
     }
 }

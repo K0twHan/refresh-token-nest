@@ -1,16 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/db/db.service';
 import * as bcrypt from 'bcrypt';
-import { parse } from 'node:path';
 import { AuthRepository } from './repository/auth.repository';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private prismaService: PrismaService,
     private authRepository: AuthRepository,
+    private readonly configService: ConfigService
   ) {}
 
   async signIn(
@@ -25,7 +24,7 @@ export class AuthService {
 
     const refreshToken = await this.jwtService.signAsync(
       { sub: user.id, email: user.email },
-      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' }
+      { secret: this.configService.get<string>('JWT_REFRESH_SECRET'), expiresIn: '7d' }
     );
     const hashedRefreshToken = await this.hashData(refreshToken);
 
@@ -33,7 +32,7 @@ export class AuthService {
 
     const payload = { sub: user.id, email: user.email };
     return {
-      access_token: await this.jwtService.signAsync(payload, {secret : process.env.JWT, expiresIn:'15m' }),
+      access_token: await this.jwtService.signAsync(payload, {secret : this.configService.get<string>('JWT'), expiresIn:'15m' }),
       refresh_token: refreshToken,
     };
   }

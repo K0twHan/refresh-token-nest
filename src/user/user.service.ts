@@ -18,13 +18,11 @@ export class UserService implements IUserService {
     async getProfile(userId: number): Promise<any> {
         return await this.userRepository.getProfile(userId);
     }
-    async depositFunds(token: string, amount: number): Promise<any> {
-        let userId = token ? parseInt(Buffer.from(token.split('.')[1], 'base64').toString().split(',')[0].split(':')[1]) : null;
-        if (!userId) {
+    async depositFunds(id: number, amount: number): Promise<any> {
+        if (!id) {
             throw new Error('Invalid token');
         }
-        console.log(`Depositing funds for user ID: ${userId}, amount: ${amount}`);
-        return await this.userRepository.depositFunds(userId, amount);
+        return await this.userRepository.depositFunds(id, amount);
     }
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, 10);

@@ -2,14 +2,15 @@ import { IUserRepository } from "../interfaces/repository/Iuser.repository";
 import { Injectable } from "@nestjs/common";
 import { CreateUserDTO } from "../dto/createUserDTO";
 import { PrismaService } from "../../db/db.service";
+import { userProfileDTO } from "../dto/userProfile.DTO";
 
 @Injectable()
 export class UserRepository implements IUserRepository {
     constructor(private readonly prismaService: PrismaService) {}
 
 
-    async createUser(data: CreateUserDTO): Promise<any> {
-        console.log(data)
+    async createUser(data: CreateUserDTO): Promise<void> {
+        try {
         await this.prismaService.user.create({
             data: {
                 email: data.email,
@@ -22,24 +23,29 @@ export class UserRepository implements IUserRepository {
             }
         });
     }
-   async  getProfile(userId: number): Promise<any> {
+
+    catch (error) {
+    if (error.code === 'P2002' && error.meta && error.meta.target.includes('email')) {
+        throw new Error('Email already exists');
+    }
+    }
+    }
+   async  getProfile(userId: number): Promise<userProfileDTO | null> {
        const user = await this.prismaService.user.findUnique({
             where: { id: userId }
         });
         if(!user) {
             return null;
         }
-        return {
-            id: user.id,
+        const profile: userProfileDTO = {
             email: user.email,
-            name: user.name,
-            lastName: user.lastName,
-            currency: user.currency,
-            birthDay: user.birthDay,
-            money: user.money
-        };
+            name: String(user.name),
+            lastName: String(user.lastName),
+            balance: Number(user.money)
+        }
+        return profile;
     }
-   async  depositFunds(userId: number, amount: number): Promise<any> {
+   async  depositFunds(userId: number, amount: number): Promise<void> {
         await this.prismaService.user.update({
             where: { id: userId },
             data: { money: { increment: amount } }
